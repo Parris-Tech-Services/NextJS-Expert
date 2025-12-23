@@ -1,38 +1,54 @@
-import { type User, type InsertUser } from "@shared/schema";
-import { randomUUID } from "crypto";
-
-// modify the interface with any CRUD methods
-// you might need
+import { db } from "./db";
+import {
+  options, history,
+  type Option, type InsertOption,
+  type HistoryItem, type InsertHistory
+} from "@shared/schema";
+import { eq, desc } from "drizzle-orm";
 
 export interface IStorage {
-  getUser(id: string): Promise<User | undefined>;
-  getUserByUsername(username: string): Promise<User | undefined>;
-  createUser(user: InsertUser): Promise<User>;
+  getOptions(): Promise<Option[]>;
+  getOption(id: number): Promise<Option | undefined>;
+  createOption(option: InsertOption): Promise<Option>;
+  updateOption(id: number, updates: Partial<InsertOption>): Promise<Option>;
+  deleteOption(id: number): Promise<void>;
+  
+  getHistory(): Promise<HistoryItem[]>;
+  createHistory(item: InsertHistory): Promise<HistoryItem>;
 }
 
-export class MemStorage implements IStorage {
-  private users: Map<string, User>;
-
-  constructor() {
-    this.users = new Map();
+export class DatabaseStorage implements IStorage {
+  async getOptions(): Promise<Option[]> {
+    return await db.select().from(options);
   }
 
-  async getUser(id: string): Promise<User | undefined> {
-    return this.users.get(id);
+  async getOption(id: number): Promise<Option | undefined> {
+    const [option] = await db.select().from(options).where(eq(options.id, id));
+    return option;
   }
 
-  async getUserByUsername(username: string): Promise<User | undefined> {
-    return Array.from(this.users.values()).find(
-      (user) => user.username === username,
-    );
+  async createOption(insertOption: InsertOption): Promise<Option> {
+    const [option] = await db.insert(options).values(insertOption).returning();
+    return option;
   }
 
-  async createUser(insertUser: InsertUser): Promise<User> {
-    const id = randomUUID();
-    const user: User = { ...insertUser, id };
-    this.users.set(id, user);
-    return user;
+  async updateOption(id: number, updates: Partial<InsertOption>): Promise<Option> {
+    const [updated] = await db.update(options).set(updates).where(eq(options.id, id)).returning();
+    return updated;
+  }
+
+  async deleteOption(id: number): Promise<void> {
+    await db.delete(options).where(eq(options.id, id));
+  }
+
+  async getHistory(): Promise<HistoryItem[]> {
+    return await db.select().from(history).orderBy(desc(history.date));
+  }
+
+  async createHistory(item: InsertHistory): Promise<HistoryItem> {
+    const [created] = await db.insert(history).values(item).returning();
+    return created;
   }
 }
 
-export const storage = new MemStorage();
+export const storage = new DatabaseStorage();
