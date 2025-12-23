@@ -1,0 +1,151 @@
+You are an expert Next.js + TypeScript engineer and product designer. Build a small, fast family takeaway decision web app that helps Josh & Kristy pick dinner for 2 adults + 2 kids quickly after work.
+
+Goal
+
+App name: Takeaway Tonight
+Primary job: by 5:00pm, produce a short, confident recommendation for takeaway (or a top 3) using simple inputs + saved preferences.
+
+Tech requirements (do these exactly)
+
+Next.js (App Router) + TypeScript
+
+Tailwind CSS
+
+Use lightweight components (shadcn/ui-style or simple custom components)
+
+Local-first persistence (no backend). Use IndexedDB via Dexie or localStorage if you keep it simple, but prefer Dexie.
+
+Works great on mobile.
+
+Include clear setup/run instructions in README.md.
+
+Core UX
+Home screen (1-minute flow)
+
+Big button: “Decide dinner”
+
+Quick inputs (all optional, default sensible):
+
+Pickup vs Delivery
+
+Max budget (e.g. $50 / $70 / $90)
+
+“Kid-friendly” toggle
+
+Dietary: Dairy-free toggle (default ON)
+
+“Healthy-ish” toggle (default ON)
+
+“No repeats from last time” toggle (default ON)
+
+Output:
+
+Top pick card with reason (“fits budget”, “kid-friendly”, “dairy-free”, “not recently”, etc.)
+
+“Runner-ups” (top 3 list)
+
+Buttons: Lock it in, Re-roll, Edit filters
+
+After “Lock it in”: show an optional nudge: “15 min outside after dinner?”
+
+Data model (local)
+
+Create CRUD screens to manage saved options.
+Each takeaway option should support:
+
+name
+
+cuisine tags (pizza, thai, burgers, sushi, fish & chips, indian, etc.)
+
+estimated price level ($ / $$ / $$$)
+
+kid-friendly score (1–5)
+
+dairy-free friendly (yes/no/notes)
+
+“healthy-ish” score (1–5)
+
+saturated-fat caution flag (low/med/high) (don’t calculate perfectly—just a simple flag)
+
+delivery available (bool)
+
+pickup available (bool)
+
+notes (what to order, best kid meal, what Josh gets dairy-free, etc.)
+
+lastOrderedAt (date)
+
+familyRating (1–5)
+
+Seed with a small starter list of 10–15 example places (generic names are fine like “Local Thai”, “Sushi Train”, etc.) so the app works immediately.
+
+Decision algorithm
+
+Implement a transparent scoring system:
+
+Filter out options that violate required toggles (e.g. dairy-free ON excludes “not dairy-free friendly”)
+
+Score remaining options with weighted factors:
+
+match pickup/delivery
+
+budget fit
+
+kid-friendly
+
+healthy-ish
+
+penalise recent orders (e.g. within last 7 days)
+
+slight random noise so it doesn’t feel deterministic
+Return top 1 + top 3.
+
+Show the “Why this pick” as bullet points derived from the factors (no vague AI language).
+
+Pages / Routes
+
+/ Home (Decide dinner)
+
+/options List + search + filters + add button
+
+/options/new Create
+
+/options/[id] Edit / delete
+
+/history Simple timeline of locked-in decisions (date, place, rating)
+
+Nice-to-haves (only if core is done)
+
+“Spin wheel” fun mode (optional)
+
+“Tonight we want: crunchy / spicy / light / comfort” vibe buttons
+
+Export/import JSON backup of the local DB
+
+Quality bar
+
+Clean UI, big tap targets, minimal clicks
+
+No broken states with empty DB (use seeded data + empty-state prompts)
+
+Type-safe forms + validation
+
+Keep code tidy and readable
+
+Deliverables
+
+Implement the working app with all pages.
+
+Provide README.md with:
+
+install
+
+run
+
+where data is stored
+
+how to add options
+
+Summarise what you built and how to use it in a short “Quick Start” section.
+
+Begin by scaffolding the project, then implement DB schema, then UI, then decision logic, then CRUD, then history.
